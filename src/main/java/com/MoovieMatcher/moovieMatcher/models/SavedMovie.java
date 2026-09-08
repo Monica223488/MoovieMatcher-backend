@@ -2,11 +2,14 @@ package com.MoovieMatcher.moovieMatcher.models;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
 
+@NoArgsConstructor
 @Getter
+@Entity
 public class SavedMovie {
 
     @Id
@@ -22,11 +25,10 @@ public class SavedMovie {
     @ManyToOne
     private User user;
 
-    @PrePersist
-    public void generateId(){
-        if (id == null) {
-            id = UUID.randomUUID();
-        }
+    public SavedMovie(Long tmdbId, String title, String posterPath) {
+        this.tmdbId = tmdbId;
+        this.title = title;
+        this.posterPath = posterPath;
     }
 
 }

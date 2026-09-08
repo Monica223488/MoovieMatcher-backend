@@ -1,6 +1,8 @@
 package com.MoovieMatcher.moovieMatcher.services;
 
 import com.MoovieMatcher.moovieMatcher.dtos.SavedMovieRequestDto;
+import com.MoovieMatcher.moovieMatcher.dtos.SavedMovieResponseDto;
+import com.MoovieMatcher.moovieMatcher.mappers.SavedMovieMapper;
 import com.MoovieMatcher.moovieMatcher.models.SavedMovie;
 import com.MoovieMatcher.moovieMatcher.repositories.SavedMovieRepository;
 import org.springframework.stereotype.Service;
@@ -14,7 +16,9 @@ public class SavedMovieService {
         this.savedMovieRepository = savedMovieRepository;
     }
 
-    public saveMovie(SavedMovieRequestDto savedMovieRequestDto) {
-        return this.savedMovieRepository.save(savedMovieRequestDto);
+    public SavedMovieResponseDto saveMovie(SavedMovieRequestDto savedMovieRequestDto) {
+        SavedMovie savedMovie = SavedMovieMapper.toEntity(savedMovieRequestDto);
+        SavedMovie savedMovieResult = savedMovieRepository.save(savedMovie);
+        return SavedMovieMapper.toResponseDto(savedMovie);
     }
 }

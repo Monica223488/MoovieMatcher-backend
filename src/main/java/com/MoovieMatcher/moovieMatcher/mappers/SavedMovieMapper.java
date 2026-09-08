@@ -8,17 +8,19 @@ public class SavedMovieMapper {
 
     public static SavedMovie toEntity(SavedMovieRequestDto savedMovieRequestDto) {
         SavedMovie savedMovie = new SavedMovie(
-                savedMovieRequestDto.,
-                savedMovieRequestDto.
+                savedMovieRequestDto.getTmdbId(),
+                savedMovieRequestDto.getTitle(),
+                savedMovieRequestDto.getPosterPath()
         );
         return savedMovie;
     }
 
     public static SavedMovieResponseDto toResponseDto (SavedMovie savedMovie){
-        SavedMovieResponseDto appointmentResponseDto = new SavedMovieResponseDto();
-        savedMovieResponseDto.id = savedMovie.getId();
-        savedMovieResponseDto. = savedMovie.get();
-        savedMovieResponseDto. = savedMovie.get();
+        SavedMovieResponseDto savedMovieResponseDto = new SavedMovieResponseDto();
+        savedMovieResponseDto.setId(savedMovie.getId());
+        savedMovieResponseDto.setTmdbId(savedMovie.getTmdbId());
+        savedMovieResponseDto.setTitle(savedMovie.getTitle());
+        savedMovieResponseDto.setPosterPath(savedMovie.getPosterPath());
         return savedMovieResponseDto;
     }
 }
