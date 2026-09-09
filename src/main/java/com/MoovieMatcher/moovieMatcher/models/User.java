@@ -9,6 +9,7 @@ import java.util.UUID;
 
 @Getter
 @Entity
+@Table(name = "users")
 public class User {
 
     @Id
