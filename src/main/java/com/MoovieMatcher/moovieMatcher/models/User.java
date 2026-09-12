@@ -22,6 +22,12 @@ public class User {
     @Setter
     private String name;
 
+    public User(String email, String password, String name) {
+        this.email = email;
+        this.name = password;
+        this.password = name;
+    }
+
     @OneToMany(mappedBy = "user")
     private List<SavedMovie> savedMovies;
 
