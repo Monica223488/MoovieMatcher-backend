@@ -1,5 +1,6 @@
 package com.MoovieMatcher.moovieMatcher.services;
 
+import com.MoovieMatcher.moovieMatcher.dtos.LoginRequestDto;
 import com.MoovieMatcher.moovieMatcher.dtos.RegisterRequestDto;
 import com.MoovieMatcher.moovieMatcher.dtos.UserResponseDto;
 import com.MoovieMatcher.moovieMatcher.mappers.UserMapper;
@@ -25,5 +26,19 @@ public class UserService {
         user.setPassword(encodedPassword);
         User userResult = userRepository.save(user);
         return UserMapper.toResponseDto(userResult);
+    }
+
+    public UserResponseDto loginUser(LoginRequestDto loginRequestDto){
+        User user = userRepository.findByEmail(loginRequestDto.getEmail())
+                .orElseThrow(()-> new RuntimeException("User not found"));
+        boolean passwordMatches = passwordEncoder.matches(
+                loginRequestDto.getPassword(),
+        user.getPassword()
+        );
+        if (!passwordMatches) {
+            throw new RuntimeException("Invalid password");
+        }
+
+        return null;
     }
 }
