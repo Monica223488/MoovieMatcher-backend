@@ -1,11 +1,13 @@
 package com.MoovieMatcher.moovieMatcher.services;
 
 import com.MoovieMatcher.moovieMatcher.dtos.LoginRequestDto;
+import com.MoovieMatcher.moovieMatcher.dtos.LoginResponseDto;
 import com.MoovieMatcher.moovieMatcher.dtos.RegisterRequestDto;
 import com.MoovieMatcher.moovieMatcher.dtos.UserResponseDto;
 import com.MoovieMatcher.moovieMatcher.mappers.UserMapper;
 import com.MoovieMatcher.moovieMatcher.models.User;
 import com.MoovieMatcher.moovieMatcher.repositories.UserRepository;
+import com.MoovieMatcher.moovieMatcher.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +16,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     public UserResponseDto registerUser(RegisterRequestDto registerRequestDto) {
@@ -28,7 +32,7 @@ public class UserService {
         return UserMapper.toResponseDto(userResult);
     }
 
-    public UserResponseDto loginUser(LoginRequestDto loginRequestDto){
+    public LoginResponseDto loginUser(LoginRequestDto loginRequestDto){
         User user = userRepository.findByEmail(loginRequestDto.getEmail())
                 .orElseThrow(()-> new RuntimeException("User not found"));
         boolean passwordMatches = passwordEncoder.matches(
@@ -39,6 +43,8 @@ public class UserService {
             throw new RuntimeException("Invalid password");
         }
 
-        return null;
+        String token = jwtService.generateToken(user);
+
+        return new LoginResponseDto(token);
     }
 }
