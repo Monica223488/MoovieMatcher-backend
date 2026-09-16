@@ -1,6 +1,7 @@
 package com.MoovieMatcher.moovieMatcher.security;
 
 import com.MoovieMatcher.moovieMatcher.models.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -30,5 +31,26 @@ public class JwtService {
                 .expiration(new Date(System.currentTimeMillis()+ 1000 * 60 * 60 * 24))
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    public String extractEmail(String token) {
+        return extractAllClaims(token).getSubject();
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public boolean validateToken(String token) {
+        final String email = extractEmail(token);
+        return email.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractAllClaims(token).getExpiration().before(new Date());
     }
 }
