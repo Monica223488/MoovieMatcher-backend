@@ -22,6 +22,7 @@ public class SavedMovie {
     @Setter
     private String posterPath;
 
+    @Setter
     @ManyToOne
     private User user;
 
