@@ -2,6 +2,8 @@ package com.MoovieMatcher.moovieMatcher.services;
 
 import com.MoovieMatcher.moovieMatcher.dtos.SavedMovieRequestDto;
 import com.MoovieMatcher.moovieMatcher.dtos.SavedMovieResponseDto;
+import com.MoovieMatcher.moovieMatcher.exceptions.SavedMovieNotFoundException;
+import com.MoovieMatcher.moovieMatcher.exceptions.UserNotFoundException;
 import com.MoovieMatcher.moovieMatcher.mappers.SavedMovieMapper;
 import com.MoovieMatcher.moovieMatcher.models.SavedMovie;
 import com.MoovieMatcher.moovieMatcher.models.User;
@@ -27,16 +29,21 @@ public class SavedMovieService {
         this.userRepository = userRepository;
     }
 
-    public SavedMovieResponseDto saveMovie(SavedMovieRequestDto savedMovieRequestDto) {
-
-        SavedMovie savedMovie = SavedMovieMapper.toEntity(savedMovieRequestDto);
+    private User getCurrentUser() {
         String email = SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getName();
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("Gebruiker niet gevonden."));
+    }
+
+    public SavedMovieResponseDto saveMovie(SavedMovieRequestDto savedMovieRequestDto) {
+
+        SavedMovie savedMovie = SavedMovieMapper.toEntity(savedMovieRequestDto);
+
+        User user = getCurrentUser();
 
         savedMovie.setUser(user);
         SavedMovie savedMovieResult = savedMovieRepository.save(savedMovie);
@@ -45,7 +52,10 @@ public class SavedMovieService {
     }
 
     public List<SavedMovieResponseDto> getAllMovies() {
-        List<SavedMovie> savedMovies = savedMovieRepository.findAll();
+
+        User user = getCurrentUser();
+
+        List<SavedMovie> savedMovies = savedMovieRepository.findAllByUser(user);
         List<SavedMovieResponseDto> savedMovieResponseDtos = new ArrayList<>();
         for (SavedMovie savedMovie : savedMovies) {
             savedMovieResponseDtos.add(SavedMovieMapper.toResponseDto(savedMovie));
@@ -54,8 +64,9 @@ public class SavedMovieService {
     }
 
     public SavedMovieResponseDto deleteMovie(UUID id) {
-        SavedMovie savedMovie = savedMovieRepository.findById(id)
-        .orElseThrow(()-> new RuntimeException("Movie not found"));
+        User user = getCurrentUser();
+        SavedMovie savedMovie = savedMovieRepository.findByIdAndUser(id, user)
+                .orElseThrow(() -> new SavedMovieNotFoundException("Movie not found"));
         savedMovieRepository.delete(savedMovie);
         SavedMovieResponseDto savedMovieResponseDto = SavedMovieMapper.toResponseDto(savedMovie);
         return savedMovieResponseDto;

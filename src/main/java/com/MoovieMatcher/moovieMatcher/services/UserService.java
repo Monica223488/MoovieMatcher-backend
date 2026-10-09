@@ -4,6 +4,8 @@ import com.MoovieMatcher.moovieMatcher.dtos.LoginRequestDto;
 import com.MoovieMatcher.moovieMatcher.dtos.LoginResponseDto;
 import com.MoovieMatcher.moovieMatcher.dtos.RegisterRequestDto;
 import com.MoovieMatcher.moovieMatcher.dtos.UserResponseDto;
+import com.MoovieMatcher.moovieMatcher.exceptions.InvalidCredentialsException;
+import com.MoovieMatcher.moovieMatcher.exceptions.UserNotFoundException;
 import com.MoovieMatcher.moovieMatcher.mappers.UserMapper;
 import com.MoovieMatcher.moovieMatcher.models.User;
 import com.MoovieMatcher.moovieMatcher.repositories.UserRepository;
@@ -34,13 +36,13 @@ public class UserService {
 
     public LoginResponseDto loginUser(LoginRequestDto loginRequestDto){
         User user = userRepository.findByEmail(loginRequestDto.getEmail())
-                .orElseThrow(()-> new RuntimeException("User not found"));
+                .orElseThrow(()-> new InvalidCredentialsException("E-mailadres of wachtwoord is onjuist."));
         boolean passwordMatches = passwordEncoder.matches(
                 loginRequestDto.getPassword(),
         user.getPassword()
         );
         if (!passwordMatches) {
-            throw new RuntimeException("Invalid password");
+            throw new InvalidCredentialsException("E-mailadres of wachtwoord is onjuist.");
         }
 
         String token = jwtService.generateToken(user);
