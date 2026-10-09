@@ -1,16 +1,17 @@
 package com.MoovieMatcher.moovieMatcher.models;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
+@Entity
+@NoArgsConstructor
+@Table(name = "users")
 public class User {
 
     @Id
@@ -23,11 +24,13 @@ public class User {
     @Setter
     private String name;
 
-
-    @PrePersist
-    public void generateId(){
-        if (id == null) {
-            id = UUID.randomUUID();
-        }
+    public User(String email, String password, String name) {
+        this.email = email;
+        this.name = password;
+        this.password = name;
     }
+
+    @OneToMany(mappedBy = "user")
+    private List<SavedMovie> savedMovies;
+
 }

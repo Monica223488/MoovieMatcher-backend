@@ -7,9 +7,8 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class SavedMovieResponseDto {
+public class UserResponseDto {
     private UUID id;
-    private Long tmdbId;
-    private String title;
-    private String posterPath;
+    private String email;
+    private String name;
 }
